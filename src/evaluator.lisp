@@ -26,8 +26,10 @@
 
 The first match wins, so an inner binding shadows an outer one that shares its
 name. Signal an error when NAME is not bound at all."
-  (declare (ignore name env))
-  (error "lookup is not implemented"))
+  (let ((binding (assoc name env)))
+    (if binding
+        (cdr binding)
+        (error "Unbound variable: ~s" name))))
 
 ;;; E2 -- prefix arithmetic.
 
@@ -36,15 +38,19 @@ name. Signal an error when NAME is not bound at all."
 
 MAPCAR and a LAMBDA do this in one line. Watch the arity: EVAL-EXPR takes two
 arguments and MAPCAR hands its function one."
-  (declare (ignore exprs env))
-  (error "eval-operands is not implemented"))
+  (mapcar (lambda (expr) (eval-expr expr env)) exprs))
 
 (defun apply-op (op values)
   "Apply the arithmetic operator OP to the two numbers in VALUES.
 
 OP is the symbol +, -, or *. Signal an error for anything else."
-  (declare (ignore op values))
-  (error "apply-op is not implemented"))
+  (unless (= (length values) 2)
+    (error "Operator ~s needs two operands" op))
+  (case op
+    (+ (+ (first values) (second values)))
+    (- (- (first values) (second values)))
+    (* (* (first values) (second values)))
+    (otherwise (error "Unknown arithmetic operator: ~s" op))))
 
 ;;; E3 -- let.
 
@@ -53,16 +59,17 @@ OP is the symbol +, -, or *. Signal an error for anything else."
 
 MAPCAR takes two lists and #'CONS pairs them. Build a new list. Do not modify
 ENV, because the caller keeps using it after the extension goes out of scope."
-  (declare (ignore params args env))
-  (error "extend-env is not implemented"))
+  (append (mapcar #'cons params args) env))
 
 (defun eval-let (expr env)
   "Evaluate (let ((name init) ...) body).
 
 Every init is evaluated in ENV before any name is bound, so the bindings happen
 in parallel and an init cannot see a name the same LET introduces."
-  (declare (ignore expr env))
-  (error "eval-let is not implemented"))
+  (let* ((bindings (second expr))
+         (params (mapcar #'first bindings))
+         (args (eval-operands (mapcar #'second bindings) env)))
+    (eval-expr (third expr) (extend-env params args env))))
 
 ;;; E4 -- lambda and application.
 
@@ -73,16 +80,23 @@ Return the list (:closure params body env). ENV is the environment the lambda
 was written in, not the one it will later be called from. Saving the wrong one
 is what makes the difference between 3 and 101 in the case the manual walks
 through."
-  (declare (ignore params body env))
-  (error "make-closure is not implemented"))
+  (list :closure params body env))
 
 (defun apply-closure (closure args)
   "Run CLOSURE on ARGS.
 
 The parameters join the environment the closure captured. Signal an error when
 CLOSURE is not a closure, and when the argument count does not match."
-  (declare (ignore closure args))
-  (error "apply-closure is not implemented"))
+  (unless (and (consp closure)
+               (eq (first closure) :closure)
+               (= (length closure) 4))
+    (error "Not a closure: ~s" closure))
+  (let ((params (second closure))
+        (body (third closure))
+        (env (fourth closure)))
+    (unless (= (length params) (length args))
+      (error "Expected ~d arguments, got ~d" (length params) (length args)))
+    (eval-expr body (extend-env params args env))))
 
 ;;; The dispatcher.
 
@@ -91,5 +105,15 @@ CLOSURE is not a closure, and when the argument count does not match."
 
 Order the branches with care. NIL is a symbol as well as the empty list, and a
 number is not a cons, so the atom tests come before the list tests."
-  (declare (ignore expr env))
-  (error "eval-expr is not implemented"))
+  (cond
+    ((numberp expr) expr)
+    ((symbolp expr) (lookup expr env))
+    ((consp expr)
+     (case (first expr)
+       ((+ - *) (apply-op (first expr) (eval-operands (rest expr) env)))
+       (let (eval-let expr env))
+       (lambda (make-closure (second expr) (third expr) env))
+       (otherwise
+        (apply-closure (eval-expr (first expr) env)
+                       (eval-operands (rest expr) env)))))
+    (t (error "Invalid expression: ~s" expr))))
