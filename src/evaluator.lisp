@@ -26,8 +26,10 @@
 
 The first match wins, so an inner binding shadows an outer one that shares its
 name. Signal an error when NAME is not bound at all."
-  (declare (ignore name env))
-  (error "lookup is not implemented"))
+  (let ((binding (assoc name env)))
+    (if binding
+        (cdr binding)
+        (error "Unbound variable: ~S" name))))
 
 ;;; E2 -- prefix arithmetic.
 
@@ -36,15 +38,18 @@ name. Signal an error when NAME is not bound at all."
 
 MAPCAR and a LAMBDA do this in one line. Watch the arity: EVAL-EXPR takes two
 arguments and MAPCAR hands its function one."
-  (declare (ignore exprs env))
-  (error "eval-operands is not implemented"))
+  (mapcar (lambda (expr) (eval-expr expr env)) exprs))
 
 (defun apply-op (op values)
   "Apply the arithmetic operator OP to the two numbers in VALUES.
 
 OP is the symbol +, -, or *. Signal an error for anything else."
-  (declare (ignore op values))
-  (error "apply-op is not implemented"))
+  (unless (= (length values) 2)
+    (error "Arithmetic expects two operands, got ~S" values))
+  (cond ((eq op '+) (+ (first values) (second values)))
+        ((eq op '-) (- (first values) (second values)))
+        ((eq op '*) (* (first values) (second values)))
+        (t (error "Unknown arithmetic operator: ~S" op))))
 
 ;;; E3 -- let.
 
@@ -91,5 +96,10 @@ CLOSURE is not a closure, and when the argument count does not match."
 
 Order the branches with care. NIL is a symbol as well as the empty list, and a
 number is not a cons, so the atom tests come before the list tests."
-  (declare (ignore expr env))
-  (error "eval-expr is not implemented"))
+  (cond
+    ((numberp expr) expr)
+    ((symbolp expr) (lookup expr env))
+    ((and (consp expr) (member (car expr) '(+ - *)))
+     (apply-op (car expr) (eval-operands (cdr expr) env)))
+    ;; Member 2 adds LET, LAMBDA and closure application here.
+    (t (error "Unsupported expression: ~S" expr))))
