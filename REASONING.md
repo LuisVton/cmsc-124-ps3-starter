@@ -12,28 +12,28 @@ wrongly. Say what you predicted, what CLISP printed, and which rule you
 misread. Those entries belong in the correction commits.
 
 ## P01
-Replace this line with the rule behind this case's four fields.
+`+` is a function, so it evaluates the nested multiplication first (2 × 3 = 6) and adds 1 to obtain 7. The result is an integer, not a sequence, so its length is `none`.
 
 ## P02
-Replace this line with the rule behind this case's four fields.
+The reader expands the leading quote to `(quote (+ 1 2))`; `quote` is a special operator and does not evaluate the addition. Its result is the three-element list `(+ 1 2)`, a nonempty cons-based list.
 
 ## P03
-Replace this line with the rule behind this case's four fields.
+`nil` is an atomic form that evaluates to itself, so it has no operator. Under the course classification it is `null` (not `symbol`), and as the empty sequence it has length 0.
 
 ## P04
-Replace this line with the rule behind this case's four fields.
+`t` evaluates to itself and is a non-`nil` symbol, not a sequence. As an atomic form it has no head operator and its length is `none`.
 
 ## P05
-Replace this line with the rule behind this case's four fields.
+`symbolp` is a function and evaluates its argument `nil` before testing it. Since `nil` is also a symbol, the result is `t`, which the course calls a `symbol` with no sequence length.
 
 ## P06
-Replace this line with the rule behind this case's four fields.
+`car` is a function; the quoted empty list supplies `nil` without evaluating its contents. `car` of the empty list returns `nil`, which is `null` and has sequence length 0.
 
 ## P07
-Replace this line with the rule behind this case's four fields.
+`cons` is a function that evaluates its arguments, then puts 1 in front of the quoted list `(2 3)`. The result `(1 2 3)` is a nonempty list (`cons`) with three top-level elements.
 
 ## P08
-Replace this line with the rule behind this case's four fields.
+`if` is a special operator that evaluates the condition and only the selected branch. `(null '())` is true, so the quoted symbol `empty` is returned; it is a symbol with no sequence length.
 
 ## P09
 Replace this line with the rule behind this case's four fields.
