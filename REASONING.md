@@ -1,16 +1,5 @@
 # Reasoning for the Predictions Table
 
-Write one entry under every heading below, then commit this file together with
-`predictions.tsv`, before you run a case or open `tests/expected.tsv`.
-
-Each entry names the rule that produces the four predicted fields for that
-case. One to three sentences is enough. The grader checks structure only. It
-does not judge quality, and it sets no word minimum.
-
-After you run the cases, add a short correction under each case you predicted
-wrongly. Say what you predicted, what CLISP printed, and which rule you
-misread. Those entries belong in the correction commits.
-
 ## P01
 `+` is a function, so it evaluates the nested multiplication first (2 × 3 = 6) and adds 1 to obtain 7. The result is an integer, not a sequence, so its length is `none`.
 
@@ -36,25 +25,37 @@ The reader expands the leading quote to `(quote (+ 1 2))`; `quote` is a special 
 `if` is a special operator that evaluates the condition and only the selected branch. `(null '())` is true, so the quoted symbol `empty` is returned; it is a symbol with no sequence length.
 
 ## P09
-Replace this line with the rule behind this case's four fields.
+`and` stops at `nil` and returns it, so the kind is `null` and the length is 0.
+The course checks special operators first, so CLISP's `and` is classified as
+`special-operator`.
 
 ## P10
-Replace this line with the rule behind this case's four fields.
+`defvar` makes `*ps3-rate*` special, so the temporary binding of 10 is used
+inside `ps3-scale`, giving 30. This is an integer with no sequence length,
+and the outer `progn` is a special operator.
 
 ## P11
-Replace this line with the rule behind this case's four fields.
+`defun` defines the function and returns its name, `ps3-twice`, so the result
+is a symbol with no sequence length. The outer operator `defun` is a macro.
 
 ## P12
-Replace this line with the rule behind this case's four fields.
+`labels` allows `down` to call itself, so it builds `(3,2,1)` before reaching
+the empty list at 0. The result is a cons of length 3, and `labels` is a
+special operator.
 
 ## P13
-Replace this line with the rule behind this case's four fields.
+`mapcar` applies `length` to each sublist, giving `(2,0,1)`, a cons of length 3.
+The outer operator `mapcar` is a function.
 
 ## P14
-Replace this line with the rule behind this case's four fields.
+The lambda squares each number through `mapcar`, giving `(1,4,9)`, a cons of
+length 3. The outer operator `mapcar` is a function.
 
 ## P15
-Replace this line with the rule behind this case's four fields.
+Evaluating the lambda produces a function, written `#<function>`, with no
+sequence length. The outer operator `lambda` is a macro.
 
 ## P16
-Replace this line with the rule behind this case's four fields.
+The closure captures `factor` as 2, so the later binding of 10 does not change
+its multiplication, which gives 6. The result is an integer with no sequence
+length, and the outer `let` is a special operator.
