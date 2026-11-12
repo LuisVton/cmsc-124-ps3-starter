@@ -1,7 +1,6 @@
 # Reasoning for the Predictions Table
 
 ## P01
-<<<<<<< HEAD
 Multiplication gives 6, then addition gives 7, so the result is an integer with
 no sequence length. The outer operator `+` is a function.
 
@@ -32,30 +31,6 @@ The outer operator `cons` is a function.
 ## P08
 The empty list satisfies `null`, so `if` selects the quoted symbol `empty`.
 The result has no sequence length, and `if` is a special operator.
-=======
-`+` is a function, so it evaluates the nested multiplication first (2 × 3 = 6) and adds 1 to obtain 7. The result is an integer, not a sequence, so its length is `none`.
-
-## P02
-The reader expands the leading quote to `(quote (+ 1 2))`; `quote` is a special operator and does not evaluate the addition. Its result is the three-element list `(+ 1 2)`, a nonempty cons-based list.
-
-## P03
-`nil` is an atomic form that evaluates to itself, so it has no operator. Under the course classification it is `null` (not `symbol`), and as the empty sequence it has length 0.
-
-## P04
-`t` evaluates to itself and is a non-`nil` symbol, not a sequence. As an atomic form it has no head operator and its length is `none`.
-
-## P05
-`symbolp` is a function and evaluates its argument `nil` before testing it. Since `nil` is also a symbol, the result is `t`, which the course calls a `symbol` with no sequence length.
-
-## P06
-`car` is a function; the quoted empty list supplies `nil` without evaluating its contents. `car` of the empty list returns `nil`, which is `null` and has sequence length 0.
-
-## P07
-`cons` is a function that evaluates its arguments, then puts 1 in front of the quoted list `(2 3)`. The result `(1 2 3)` is a nonempty list (`cons`) with three top-level elements.
-
-## P08
-`if` is a special operator that evaluates the condition and only the selected branch. `(null '())` is true, so the quoted symbol `empty` is returned; it is a symbol with no sequence length.
->>>>>>> 767611b80d925de1023815bc0a134c74f7c64bc4
 
 ## P09
 `and` stops at `nil` and returns it, so the kind is `null` and the length is 0.

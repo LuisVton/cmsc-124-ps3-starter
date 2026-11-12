@@ -29,11 +29,7 @@ name. Signal an error when NAME is not bound at all."
   (let ((binding (assoc name env)))
     (if binding
         (cdr binding)
-<<<<<<< HEAD
         (error "Unbound variable: ~s" name))))
-=======
-        (error "Unbound variable: ~S" name))))
->>>>>>> 767611b80d925de1023815bc0a134c74f7c64bc4
 
 ;;; E2 -- prefix arithmetic.
 
@@ -49,20 +45,12 @@ arguments and MAPCAR hands its function one."
 
 OP is the symbol +, -, or *. Signal an error for anything else."
   (unless (= (length values) 2)
-<<<<<<< HEAD
     (error "Operator ~s needs two operands" op))
   (case op
     (+ (+ (first values) (second values)))
     (- (- (first values) (second values)))
     (* (* (first values) (second values)))
     (otherwise (error "Unknown arithmetic operator: ~s" op))))
-=======
-    (error "Arithmetic expects two operands, got ~S" values))
-  (cond ((eq op '+) (+ (first values) (second values)))
-        ((eq op '-) (- (first values) (second values)))
-        ((eq op '*) (* (first values) (second values)))
-        (t (error "Unknown arithmetic operator: ~S" op))))
->>>>>>> 767611b80d925de1023815bc0a134c74f7c64bc4
 
 ;;; E3 -- let.
 
@@ -120,7 +108,6 @@ number is not a cons, so the atom tests come before the list tests."
   (cond
     ((numberp expr) expr)
     ((symbolp expr) (lookup expr env))
-<<<<<<< HEAD
     ((consp expr)
      (case (first expr)
        ((+ - *) (apply-op (first expr) (eval-operands (rest expr) env)))
@@ -130,15 +117,3 @@ number is not a cons, so the atom tests come before the list tests."
         (apply-closure (eval-expr (first expr) env)
                        (eval-operands (rest expr) env)))))
     (t (error "Invalid expression: ~s" expr))))
-=======
-    ((and (consp expr) (member (car expr) '(+ - *)))
-     (apply-op (car expr) (eval-operands (cdr expr) env)))
-    ((and (consp expr) (eq (car expr) 'let))
-     (eval-let expr env))
-    ((and (consp expr) (eq (car expr) 'lambda))
-     (make-closure (second expr) (third expr) env))
-    ((consp expr)
-     (apply-closure (eval-expr (car expr) env)
-                    (eval-operands (cdr expr) env)))
-    (t (error "Unsupported expression: ~S" expr))))
->>>>>>> 767611b80d925de1023815bc0a134c74f7c64bc4
